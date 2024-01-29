@@ -22,6 +22,7 @@ def order_robots_from_RobotSpareBin():
     download_CSV_file()
     open_robot_order_website()
     or_orders()
+    archive_receipts()
     
 def open_robot_order_website():
     """Open RobotSpareBin Industries Inc. order website."""
@@ -73,7 +74,7 @@ def save_order_html(order_nr):
     page = browser.page()
     order_html = page.locator("#receipt").inner_html()
     pdf = PDF()
-    pdf.html_to_pdf(order_html, f"output/order-{order_nr}.pdf")
+    pdf.html_to_pdf(order_html, f"output/receipt/order-{order_nr}.pdf")
     screenshot_robot(order_nr)
     page.click("button:text('Order another robot')")
     
@@ -90,12 +91,9 @@ def embed_screenshot_to_receipt(screenshot, pdf_file):
     list = [
         f"output/{screenshot}:align=center",
     ]
-    pdf.add_files_to_pdf(files=list, target_document=f"output/{pdf_file}", append=True)
+    pdf.add_files_to_pdf(files=list, target_document=f"output/receipt/{pdf_file}", append=True)
 
-# def archive_receipts():
-#     """Create ZIP archive for all orders-X.pdf files"""
-#     archive = Archive()
-#     archive.create_zip_archive(
-#         files=[f"output/{f}" for f in os.listdir("output") if f.endswith(".pdf")],
-#         target_zip_file="output/orders.zip"
-#     )
+def archive_receipts():
+    """Create ZIP archive for all orders-X.pdf files"""
+    archive = Archive()
+    archive.archive_folder_with_zip(folder="output/receipt", archive_name="output/receipt.zip")
